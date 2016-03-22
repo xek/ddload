@@ -7,30 +7,78 @@
   </clients>
 
   <!-- Server side setup -->
- <servers>
-  <server host="127.0.0.1" port="{{port}}" type="tcp"/>
- </servers>
+  <servers>
+    <server host="127.0.0.1" port="{{port}}" type="tcp"/>
+  </servers>
 
   <monitoring>
-   <monitor host="localhost"/>
+    <monitor host="localhost"/>
   </monitoring>
 
- <load>
-  <arrivalphase phase="1" duration="1" unit="minute">
-    <users interarrival="3" unit="second"></users>
-  </arrivalphase>
- </load>
+  <load>
+    <arrivalphase phase="1" duration="1" unit="minute">
+      <users interarrival="3" unit="second"></users>
+    </arrivalphase>
+    <user session="{{sql}}-create-schema" start_time="0" unit="minute"></user>
+    <user session="{{sql}}-drop-schema" start_time="1" unit="minute"></user>
+  </load>
 
- <sessions>
-  <session probability="100" name="{{sql}}-example" type="ts_{{sql}}">
+  <sessions>
+
+    <session probability="0" name="{{sql}}-create-schema" type="ts_{{sql}}">
       <request>
-        <{{sql}} type="connect" />
+        <{{sql}} type="connect" database="{{database}}" username="{{user}}" />
       </request>
       <request>
-        <{{sql}} type="authenticate" database="test" username="test" password="test" />
+        <{{sql}} type="authenticate" database="{{database}}" username="{{user}}" password="{{password}}" />
       </request>
       <request>
-        <{{sql}} type="sql">SHOW TABLES</{{sql}}>
+        <{{sql}} type="sql">CREATE DATABASE test</{{sql}}>
+      </request>
+      <request>
+        <{{sql}} type="close"></{{sql}}>
+      </request>
+      <request>
+        <{{sql}} type="connect" database="test" username="{{user}}" />
+      </request>
+      <request>
+        <{{sql}} type="authenticate" database="test" username="{{user}}" password="{{password}}" />
+      </request>
+      <request>
+        <{{sql}} type="sql">CREATE TABLE gens (id serial primary key)</{{sql}}>
+      </request>
+      <request>
+        <{{sql}} type="sql">CREATE TABLE te (id serial primary key)</{{sql}}>
+      </request>
+      <request>
+        <{{sql}} type="close"></{{sql}}>
+      </request>
+    </session>
+
+    <session probability="0" name="{{sql}}-drop-schema" type="ts_{{sql}}">
+      <request>
+        <{{sql}} type="connect" database="{{database}}" username="{{user}}" />
+      </request>
+      <request>
+        <{{sql}} type="authenticate" database="{{database}}" username="{{user}}" password="{{password}}" />
+      </request>
+      <request>
+        <{{sql}} type="sql">DROP DATABASE test</{{sql}}>
+      </request>
+      <request>
+        <{{sql}} type="close"></{{sql}}>
+      </request>
+    </session>
+
+    <session probability="100" name="{{sql}}-example" type="ts_{{sql}}">
+      <request>
+        <{{sql}} type="connect" database="test" username="{{user}}" />
+      </request>
+      <request>
+        <{{sql}} type="authenticate" database="test" username="{{user}}" password="{{password}}" />
+      </request>
+      <request>
+        <{{sql}} type="sql">INSERT INTO gens {% if pg %}DEFAULT VALUES{% else %}VALUES (){% endif %}</{{sql}}>
       </request>
       <request>
         <{{sql}} type="sql">SELECT * FROM gens</{{sql}}>
