@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd">
+<tsung loglevel="debug" dumptraffic="true">
+
+  <clients>
+    <client host="localhost" use_controller_vm="true"/>
+  </clients>
+
+  <!-- Server side setup -->
+ <servers>
+  <server host="127.0.0.1" port="{{port}}" type="tcp"/>
+ </servers>
+
+  <monitoring>
+   <monitor host="localhost"/>
+  </monitoring>
+
+ <load>
+  <arrivalphase phase="1" duration="1" unit="minute">
+    <users interarrival="3" unit="second"></users>
+  </arrivalphase>
+ </load>
+
+ <sessions>
+  <session probability="100" name="{{sql}}-example" type="ts_{{sql}}">
+      <request>
+        <{{sql}} type="connect" />
+      </request>
+      <request>
+        <{{sql}} type="authenticate" database="test" username="test" password="test" />
+      </request>
+      <request>
+        <{{sql}} type="sql">SHOW TABLES</{{sql}}>
+      </request>
+      <request>
+        <{{sql}} type="sql">SELECT * FROM gens</{{sql}}>
+      </request>
+      <request>
+        <{{sql}} type="sql">SELECT * FROM te</{{sql}}>
+      </request>
+      <request>
+        <{{sql}} type="close"></{{sql}}>
+      </request>
+  </session>
+ </sessions>
+</tsung>
