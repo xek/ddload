@@ -22,7 +22,7 @@ def load_sql(sql, test, **kwargs):
         test_template.render(sql=sql, **kwargs).rstrip(';'))
 
 
-def generate(sql, test, **kwargs):
+def generate(sql, test):
     """
     Generate tsung-<pgsql|mysql>-<test>.xml output configuration.
     """
