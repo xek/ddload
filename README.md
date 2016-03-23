@@ -11,5 +11,5 @@ sudo apt-get update
 sudo apt-get install tsung python-jinja2
 ```
 
-We use Tsung to run the tests. Type `make` to build the XML configs.
-Type `make open` to generate and open HTML reports inside a web browser.
+We use Tsung to run the tests. Type `make` to build the XML configs and run the
+tests. Type `make open` to generate and open HTML reports inside a web browser.
