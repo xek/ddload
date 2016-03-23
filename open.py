@@ -8,4 +8,4 @@ from os import system
 
 for d in glob('tsung/*/*'):
     system('cd %s; /usr/lib/tsung/bin/tsung_stats.pl --title %s;'
-           ' firefox graph.html' % (d, d.split('/')[1]))
+           ' xdg-open graph.html' % (d, d.split('/')[1]))
