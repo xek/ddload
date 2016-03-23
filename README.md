@@ -7,6 +7,7 @@ First, install the dependencies:
 
 ```
 sudo apt-add-repository ppa:tsung/stable
+sudo apt-get update
 sudo apt-get install tsung python-jinja2
 ```
 
