@@ -36,7 +36,9 @@ def generate(sql, test):
         config.write(tsung_template.render(
             sql=sql, migration=load_sql(sql, 'tests/%s.sql' % test, **kwargs),
             schema=load_sql(sql, 'schema.sql', **kwargs),
-            workload=load_sql(sql, 'workload.sql', **kwargs), **kwargs))
+            workload_fill=load_sql(sql, 'workload_fill.sql', **kwargs),
+            workload_test=load_sql(sql, 'workload_test.sql', **kwargs),
+            **kwargs))
 
 
 def get_tests():
