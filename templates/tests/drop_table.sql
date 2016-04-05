@@ -1,1 +1,1 @@
-drop table unused_table;
+DROP TABLE unused_table;

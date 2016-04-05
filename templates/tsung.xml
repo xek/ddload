@@ -3,7 +3,10 @@
 <tsung loglevel="debug" dumptraffic="true">
 
   <clients>
-    <client host="localhost" use_controller_vm="true"/>
+    <client host="localhost" use_controller_vm="false"/>
+    <client host="localhost" use_controller_vm="false"/>
+    <client host="localhost" use_controller_vm="false"/>
+    <client host="localhost" use_controller_vm="false"/>
   </clients>
 
   <!-- Server side setup -->
@@ -17,25 +20,31 @@
 
   <load duration="70" unit="second">
     
+    <user session="{{sql}}-create-schema" start_time="0" unit="minute"></user>
+
     <arrivalphase phase="1" duration="5" unit="second">
       <users maxnumber="0" interarrival="1" unit="minute"></users>
     </arrivalphase>
 
-    <arrivalphase phase="2" duration="25" unit="second">
+    <arrivalphase phase="2" duration="15" unit="second">
       <session_setup name="{{sql}}-workload-fill" probability="100"/>
       <session_setup name="{{sql}}-workload-test" probability="0"/>
-      <users interarrival="3" unit="second"></users>
+      <users arrivalrate="100" unit="second"></users>
     </arrivalphase>
 
-    <arrivalphase phase="3" duration="30" unit="second">
+    <arrivalphase phase="3" duration="5" unit="second">
+      <users maxnumber="0" interarrival="1" unit="minute"></users>
+    </arrivalphase>
+
+    <user session="{{sql}}-migrate-schema" start_time="40" unit="second"></user>
+    <arrivalphase phase="4" duration="45" unit="second">
       <session_setup name="{{sql}}-workload-fill" probability="0"/>
       <session_setup name="{{sql}}-workload-test" probability="100"/>
-      <users interarrival="3" unit="second"></users>
+      <users arrivalrate="50" unit="second"></users>
     </arrivalphase>
 
-    <user session="{{sql}}-create-schema" start_time="0" unit="minute"></user>
-    <user session="{{sql}}-migrate-schema" start_time="40" unit="second"></user>
     <user session="{{sql}}-drop-schema" start_time="69" unit="second"></user>
+
   </load>
 
   <sessions>
@@ -93,7 +102,7 @@
       <request>
         <{{sql}} type="authenticate" database="{{database}}" username="{{user}}" password="{{password}}" />
       </request>
-      <request>
+      <request tag="drop">
         <{{sql}} type="sql">DROP DATABASE test</{{sql}}>
       </request>
       <request>
@@ -102,6 +111,30 @@
     </session>
 
     <session probability="50" name="{{sql}}-workload-fill" type="ts_{{sql}}">
+      <setdynvars sourcetype="erlang" callback="ts_user_server:get_unique_id">
+	<var name="id1" />
+      </setdynvars>
+      <setdynvars sourcetype="erlang" callback="ts_user_server:get_unique_id">
+	<var name="id2" />
+      </setdynvars>
+      <setdynvars sourcetype="random_number" start="1" end="99999999">
+	<var name="int1" />
+      </setdynvars>
+      <setdynvars sourcetype="random_number" start="1" end="99999999">
+	<var name="int2" />
+      </setdynvars>
+      <setdynvars sourcetype="random_number" start="0" end="99">
+	<var name="int3" />
+      </setdynvars>
+      <setdynvars sourcetype="random_string" length="30">
+	<var name="str1" />
+      </setdynvars>
+      <setdynvars sourcetype="random_string" length="10">
+	<var name="str2" />
+      </setdynvars>
+      <setdynvars sourcetype="random_string" length="10">
+	<var name="str3" />
+      </setdynvars>
       <request>
         <{{sql}} type="connect" database="test" username="{{user}}" />
       </request>
@@ -109,7 +142,7 @@
         <{{sql}} type="authenticate" database="test" username="{{user}}" password="{{password}}" />
       </request>
       {% for statement in workload_fill %}
-      <request>
+      <request subst="true">
         <{{sql}} type="sql">{{ statement }}</{{sql}}>
       </request>
       {% endfor %}
@@ -119,6 +152,30 @@
   </session>
 
     <session probability="50" name="{{sql}}-workload-test" type="ts_{{sql}}">
+      <setdynvars sourcetype="erlang" callback="ts_user_server:get_unique_id">
+	<var name="id1" />
+      </setdynvars>
+      <setdynvars sourcetype="erlang" callback="ts_user_server:get_unique_id">
+	<var name="id2" />
+      </setdynvars>
+      <setdynvars sourcetype="random_number" start="1" end="99999999">
+	<var name="int1" />
+      </setdynvars>
+      <setdynvars sourcetype="random_number" start="1" end="99999999">
+	<var name="int2" />
+      </setdynvars>
+      <setdynvars sourcetype="random_number" start="0" end="99">
+	<var name="int3" />
+      </setdynvars>
+      <setdynvars sourcetype="random_string" length="30">
+	<var name="str1" />
+      </setdynvars>
+      <setdynvars sourcetype="random_string" length="10">
+	<var name="str2" />
+      </setdynvars>
+      <setdynvars sourcetype="random_string" length="10">
+	<var name="str3" />
+      </setdynvars>
       <request>
         <{{sql}} type="connect" database="test" username="{{user}}" />
       </request>
@@ -126,7 +183,7 @@
         <{{sql}} type="authenticate" database="test" username="{{user}}" password="{{password}}" />
       </request>
       {% for statement in workload_test %}
-      <request>
+      <request subst="true">
         <{{sql}} type="sql">{{ statement }}</{{sql}}>
       </request>
       {% endfor %}

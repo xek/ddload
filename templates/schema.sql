@@ -26,6 +26,7 @@ CREATE TABLE orders (
  ord_no integer PRIMARY KEY,
  ord_date date,
  item_code integer,
+ item_name character(35),
  item_grade character(1),
  ord_qty numeric,
  ord_amount numeric
