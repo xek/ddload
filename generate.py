@@ -7,6 +7,8 @@ import re
 from sys import argv, exit
 from jinja2 import Environment, FileSystemLoader
 
+MULTIPLICATOR = 10
+
 sql_split_re = re.compile(';\s*\n')
 
 env = Environment(loader=FileSystemLoader('templates'))
@@ -32,6 +34,10 @@ def generate(sql, test):
     elif sql == 'pgsql':
         kwargs = dict(pg=True, port=5432, database='template1',
                  user='postgres', password='empty')
+
+    kwargs.update(dict(multiplicator=MULTIPLICATOR,
+                       testname=test))
+
     with open('tsung-%s-%s.xml' % (sql, test), 'w') as config:
         config.write(tsung_template.render(
             sql=sql, migration=load_sql(sql, 'tests/%s.sql' % test, **kwargs),

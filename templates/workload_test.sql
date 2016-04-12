@@ -25,8 +25,6 @@ SELECT * FROM (SELECT
 WHERE NOT EXISTS (SELECT * FROM orders WHERE ord_no = %%_id2%%)
  AND EXISTS (SELECT * FROM items WHERE item_code = %%_id1%%);
 
-SELECT {% if pg %}pg_{% endif %}sleep(1);
-
 SELECT item_grade FROM items, orders
  WHERE items.item_code = orders.item_code AND ord_no = %%_int3%%;
 

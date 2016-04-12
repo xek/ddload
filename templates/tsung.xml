@@ -18,32 +18,32 @@
     <monitor host="localhost"/>
   </monitoring>
 
-  <load duration="70" unit="second">
+  <load duration="{{70 * multiplicator}}" unit="second">
     
     <user session="{{sql}}-create-schema" start_time="0" unit="minute"></user>
 
-    <arrivalphase phase="1" duration="5" unit="second">
+    <arrivalphase phase="1" duration="{{5 * multiplicator}}" unit="second">
       <users maxnumber="0" interarrival="1" unit="minute"></users>
     </arrivalphase>
 
-    <arrivalphase phase="2" duration="15" unit="second">
+    <arrivalphase phase="2" duration="{{15 * multiplicator}}" unit="second">
       <session_setup name="{{sql}}-workload-fill" probability="100"/>
       <session_setup name="{{sql}}-workload-test" probability="0"/>
       <users arrivalrate="100" unit="second"></users>
     </arrivalphase>
 
-    <arrivalphase phase="3" duration="5" unit="second">
+    <arrivalphase phase="3" duration="{{5 * multiplicator}}" unit="second">
       <users maxnumber="0" interarrival="1" unit="minute"></users>
     </arrivalphase>
 
-    <user session="{{sql}}-migrate-schema" start_time="40" unit="second"></user>
-    <arrivalphase phase="4" duration="45" unit="second">
+    <user session="{{sql}}-migrate-schema" start_time="{{40 * multiplicator}}" unit="second"></user>
+    <arrivalphase phase="4" duration="{{45 * multiplicator}}" unit="second">
       <session_setup name="{{sql}}-workload-fill" probability="0"/>
       <session_setup name="{{sql}}-workload-test" probability="100"/>
       <users arrivalrate="50" unit="second"></users>
     </arrivalphase>
 
-    <user session="{{sql}}-drop-schema" start_time="69" unit="second"></user>
+    <user session="{{sql}}-drop-schema" start_time="{{69 * multiplicator}}" unit="second"></user>
 
   </load>
 
@@ -57,16 +57,16 @@
         <{{sql}} type="authenticate" database="{{database}}" username="{{user}}" password="{{password}}" />
       </request>
       <request>
-        <{{sql}} type="sql">CREATE DATABASE test</{{sql}}>
+        <{{sql}} type="sql">CREATE DATABASE test_{{testname}}</{{sql}}>
       </request>
       <request>
         <{{sql}} type="close"></{{sql}}>
       </request>
       <request>
-        <{{sql}} type="connect" database="test" username="{{user}}" />
+        <{{sql}} type="connect" database="test_{{testname}}" username="{{user}}" />
       </request>
       <request>
-        <{{sql}} type="authenticate" database="test" username="{{user}}" password="{{password}}" />
+        <{{sql}} type="authenticate" database="test_{{testname}}" username="{{user}}" password="{{password}}" />
       </request>
       {% for statement in schema %}
       <request>
@@ -80,10 +80,10 @@
 
     <session probability="0" name="{{sql}}-migrate-schema" type="ts_{{sql}}">
       <request>
-        <{{sql}} type="connect" database="test" username="{{user}}" />
+        <{{sql}} type="connect" database="test_{{testname}}" username="{{user}}" />
       </request>
       <request>
-        <{{sql}} type="authenticate" database="test" username="{{user}}" password="{{password}}" />
+        <{{sql}} type="authenticate" database="test_{{testname}}" username="{{user}}" password="{{password}}" />
       </request>
       {% for statement in migration %}
       <request>
@@ -103,7 +103,7 @@
         <{{sql}} type="authenticate" database="{{database}}" username="{{user}}" password="{{password}}" />
       </request>
       <request tag="drop">
-        <{{sql}} type="sql">DROP DATABASE test</{{sql}}>
+        <{{sql}} type="sql">DROP DATABASE test_{{testname}}</{{sql}}>
       </request>
       <request>
         <{{sql}} type="close"></{{sql}}>
@@ -136,10 +136,10 @@
 	<var name="str3" />
       </setdynvars>
       <request>
-        <{{sql}} type="connect" database="test" username="{{user}}" />
+        <{{sql}} type="connect" database="test_{{testname}}" username="{{user}}" />
       </request>
       <request>
-        <{{sql}} type="authenticate" database="test" username="{{user}}" password="{{password}}" />
+        <{{sql}} type="authenticate" database="test_{{testname}}" username="{{user}}" password="{{password}}" />
       </request>
       {% for statement in workload_fill %}
       <request subst="true">
@@ -177,15 +177,16 @@
 	<var name="str3" />
       </setdynvars>
       <request>
-        <{{sql}} type="connect" database="test" username="{{user}}" />
+        <{{sql}} type="connect" database="test_{{testname}}" username="{{user}}" />
       </request>
       <request>
-        <{{sql}} type="authenticate" database="test" username="{{user}}" password="{{password}}" />
+        <{{sql}} type="authenticate" database="test_{{testname}}" username="{{user}}" password="{{password}}" />
       </request>
       {% for statement in workload_test %}
       <request subst="true">
         <{{sql}} type="sql">{{ statement }}</{{sql}}>
       </request>
+      <thinktime value="0.1" random="true"></thinktime>
       {% endfor %}
       <request>
         <{{sql}} type="close"></{{sql}}>

@@ -1,1 +1,1 @@
-DROP INDEX vendors_vendor_name_idx;
+DROP INDEX vendors_vendor_name_idx ON vendors;
