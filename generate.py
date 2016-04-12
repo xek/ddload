@@ -36,6 +36,7 @@ def generate(sql, test):
                  user='postgres', password='empty')
 
     kwargs.update(dict(multiplicator=MULTIPLICATOR,
+                       dbname='test_' + test,
                        testname=test))
 
     with open('tsung-%s-%s.xml' % (sql, test), 'w') as config:
