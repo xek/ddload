@@ -110,7 +110,7 @@
       </request>
     </session>
 
-    <session probability="50" name="{{sql}}-workload-fill" type="ts_{{sql}}">
+    <session probability="0" name="{{sql}}-workload-fill" type="ts_{{sql}}">
       <setdynvars sourcetype="erlang" callback="ts_user_server:get_unique_id">
 	<var name="id1" />
       </setdynvars>
@@ -151,7 +151,7 @@
       </request>
   </session>
 
-    <session probability="50" name="{{sql}}-workload-test" type="ts_{{sql}}">
+    <session probability="100" name="{{sql}}-workload-test" type="ts_{{sql}}">
       <setdynvars sourcetype="erlang" callback="ts_user_server:get_unique_id">
 	<var name="id1" />
       </setdynvars>

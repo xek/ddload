@@ -1,1 +1,1 @@
-SELECT {% if pg %}pg_{% endif %}sleep(1);
+SELECT {% if pg %}pg_{% endif %}sleep(0);

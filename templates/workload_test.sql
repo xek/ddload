@@ -1,5 +1,3 @@
-BEGIN;
-
 INSERT INTO used_table {% if pg %}DEFAULT VALUES{% else %}VALUES (){% endif %};
 SELECT * FROM used_table where id = %%_int2%%;
 
@@ -29,5 +27,3 @@ SELECT item_grade FROM items, orders
  WHERE items.item_code = orders.item_code AND ord_no = %%_int3%%;
 
 SELECT * FROM vendors WHERE vendor_code = %%_int3%%;
-
-COMMIT;
